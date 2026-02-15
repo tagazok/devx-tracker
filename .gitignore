@@ -1,0 +1,15 @@
+node_modules
+dist
+.env
+private.key
+*.local
+.DS_Store
+public/meetups*.json
+public/tickets*.json
+public/labels.json
+
+fetch-data-meetup.js
+fetch-data-sim.py
+fetch-meetup-data.command
+
+.kiro
