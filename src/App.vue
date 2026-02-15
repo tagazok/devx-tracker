@@ -12,6 +12,8 @@ import UploadDialog from './components/UploadDialog.vue'
 import LoadDataButton from './components/LoadDataButton.vue'
 import FaqPage from './components/FaqPage.vue'
 
+const baseUrl = import.meta.env.BASE_URL
+
 const tabLabelMap: Record<TabId, string> = {
   statistics: 'Statistics',
   all: 'All Activities',
