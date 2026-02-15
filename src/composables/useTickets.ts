@@ -18,7 +18,7 @@ export function useTickets(activeTab: Ref<string>): {
 
   onMounted(async () => {
     try {
-      const ticketsResponse = await fetch('/tickets_all.json');
+      const ticketsResponse = await fetch(`${import.meta.env.BASE_URL}tickets_all.json`);
       if (!ticketsResponse.ok) {
         throw new Error('tickets.json');
       }

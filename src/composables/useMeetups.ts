@@ -12,7 +12,7 @@ export function useMeetups(): {
 
   onMounted(async () => {
     try {
-      const response = await fetch('/meetups.json');
+      const response = await fetch(`${import.meta.env.BASE_URL}meetups.json`);
       if (!response.ok) {
         throw new Error('meetups.json');
       }

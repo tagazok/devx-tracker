@@ -32,7 +32,7 @@ const avatarExtensions: Record<string, string> = {
 }
 function getAvatarUrl(alias: string): string | null {
   const ext = avatarExtensions[alias.toLowerCase()]
-  return ext ? `/team-avatars/${alias.toLowerCase()}.${ext}` : null
+  return ext ? `${import.meta.env.BASE_URL}team-avatars/${alias.toLowerCase()}.${ext}` : null
 }
 
 const formattedDate = date

@@ -69,7 +69,7 @@ function handleClose() {
 <template>
   <div id="app">
     <div v-if="!hasData" class="splash">
-      <img src="/logo.png" alt="Logo" class="splash-logo" />
+      <img :src="`${baseUrl}logo.png`" alt="Logo" class="splash-logo" />
       <LoadDataButton variant="hero" @click="dialogOpen = true" />
     </div>
     <template v-else>
