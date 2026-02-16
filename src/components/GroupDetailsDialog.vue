@@ -343,7 +343,7 @@ onUnmounted(() => {
                 </div>
                 
                 <div v-if="group.orgs.edges.length > 1" class="email-all-container">
-                  <a :href="getAllOrganizerEmails()" class="email-all-button">
+                  <a :href="getAllOrganizerEmails()" target="_blank" class="email-all-button">
                     📧 Email All Organizers
                   </a>
                 </div>
