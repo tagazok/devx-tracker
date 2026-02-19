@@ -16,7 +16,7 @@ describe('UploadDialog', () => {
     expect(wrapper.find('#tickets-input').exists()).toBe(true)
     expect(wrapper.find('#meetups-input').exists()).toBe(true)
     expect(wrapper.find('.go-button').exists()).toBe(true)
-    expect(wrapper.find('.go-button').text()).toBe('Go')
+    expect(wrapper.find('.go-button').text()).toBe('Import Data')
 
     wrapper.unmount()
   })

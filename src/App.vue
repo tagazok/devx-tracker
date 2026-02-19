@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import type { TabId } from './types/ticket'
 import type { UploadPayload } from './composables/useDataStore'
 import { useDataStore } from './composables/useDataStore'
+import { usePersistence } from './composables/usePersistence'
 import { filterByTab } from './utils/ticketFilters'
 import TabNavigator from './components/TabNavigator.vue'
 import TicketList from './components/TicketList.vue'
@@ -10,6 +11,7 @@ import StatisticsPanel from './components/StatisticsPanel.vue'
 import CommunityGoalsPanel from './components/CommunityGoalsPanel.vue'
 import UploadDialog from './components/UploadDialog.vue'
 import LoadDataButton from './components/LoadDataButton.vue'
+import CacheBanner from './components/CacheBanner.vue'
 import FaqPage from './components/FaqPage.vue'
 
 const baseUrl = import.meta.env.BASE_URL
@@ -24,10 +26,13 @@ const tabLabelMap: Record<TabId, string> = {
 }
 
 const { tickets, meetups, hasData, availableTabs, setData, loadLabels } = useDataStore()
+const { saveTickets, saveMeetups, loadTickets, loadMeetups } = usePersistence()
 
 loadLabels()
 
 const dialogOpen = ref(false)
+const ticketsTimestamp = ref<string | null>(null)
+const meetupsTimestamp = ref<string | null>(null)
 
 const displayTabs = computed(() =>
   availableTabs.value.map((id) => ({ id, label: tabLabelMap[id] }))
@@ -50,15 +55,37 @@ function onHashChange() {
   activeTab.value = tabFromHash()
 }
 
-onMounted(() => window.addEventListener('hashchange', onHashChange))
+onMounted(async () => {
+  window.addEventListener('hashchange', onHashChange)
+  const cachedTickets = await loadTickets()
+  const cachedMeetups = await loadMeetups()
+  if (cachedTickets || cachedMeetups) {
+    setData({
+      tickets: cachedTickets?.data,
+      meetups: cachedMeetups?.data,
+    })
+    ticketsTimestamp.value = cachedTickets?.timestamp ?? null
+    meetupsTimestamp.value = cachedMeetups?.timestamp ?? null
+    activeTab.value = availableTabs.value[0] ?? 'statistics'
+  }
+})
 onUnmounted(() => window.removeEventListener('hashchange', onHashChange))
 
 const filteredTickets = computed(() =>
   filterByTab(tickets.value, activeTab.value)
 )
 
-function handleUpload(payload: UploadPayload) {
+async function handleUpload(payload: UploadPayload) {
   setData(payload)
+  const now = new Date().toISOString()
+  if (payload.tickets) {
+    await saveTickets(payload.tickets, now)
+    ticketsTimestamp.value = now
+  }
+  if (payload.meetups) {
+    await saveMeetups(payload.meetups, now)
+    meetupsTimestamp.value = now
+  }
   dialogOpen.value = false
   activeTab.value = availableTabs.value[0] ?? 'statistics'
 }
@@ -75,6 +102,7 @@ function handleClose() {
       <LoadDataButton variant="hero" @click="dialogOpen = true" />
     </div>
     <template v-else>
+      <CacheBanner :tickets-timestamp="ticketsTimestamp" :meetups-timestamp="meetupsTimestamp" />
       <TabNavigator :active-tab="activeTab" :tabs="displayTabs" @update:active-tab="activeTab = $event">
         <template #actions>
           <LoadDataButton variant="compact" @click="dialogOpen = true" />
